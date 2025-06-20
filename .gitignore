@@ -36,3 +36,9 @@
 .idea
 .vscode
 
+# CMake
+CMakeCache.txt
+cmake-build-debug
+cmake-build-release
+build
+

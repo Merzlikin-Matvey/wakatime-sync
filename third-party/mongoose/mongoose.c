@@ -4154,7 +4154,8 @@ void mg_mgr_init(struct mg_mgr *mgr) {
 #endif
   mgr->pipe = MG_INVALID_SOCKET;
   mgr->dnstimeout = 3000;
-  mgr->dns4.url = "udp://8.8.8.8:53";
+  // I am not sure why we need this, but it is needed for
+  mgr->dns4.url = "udp://1.1.1.1:53";
   mgr->dns6.url = "udp://[2001:4860:4860::8888]:53";
   mg_tls_ctx_init(mgr);
 }
