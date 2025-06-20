@@ -7,7 +7,7 @@
 
 
 const char *REDIRECT_URL = "https://hackatime.hackclub.com/api/hackatime/v1";
-
+const char *ORIGINAL_URL = "https://api.wakatime.com/api/v1";
 
 
 void request_info(struct mg_http_message *hm) {
@@ -30,6 +30,7 @@ static void event_handler(struct mg_connection *c, int event, void *ev_data) {
             printf("REDIRECTING TO HACKTIME API\n");
             request_info(hm);
             char response[4096] = {0};
+            //redirect(hm, ORIGINAL_URL, response);
             redirect(hm, REDIRECT_URL, response);
             printf("Response from redirect: %s\n", response);
             mg_http_reply(c, 200, "Content-Type: application/json\r\n", "%s", response);
@@ -41,7 +42,7 @@ static void event_handler(struct mg_connection *c, int event, void *ev_data) {
 int main(void) {
     struct mg_mgr mgr;
     mg_mgr_init(&mgr);
-    mg_http_listen(&mgr, "0.0.0.0:8080", event_handler, &mgr);
+    mg_http_listen(&mgr, "0.0.0.0:59178", event_handler, &mgr);
     for (;;) mg_mgr_poll(&mgr, 1000);
 }
 
