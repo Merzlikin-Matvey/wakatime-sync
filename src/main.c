@@ -1,3 +1,5 @@
+#include "redirect.h"
+
 #include <stdio.h>
 #include "mongoose.h"
 #include "curl/curl.h"
@@ -13,37 +15,12 @@ void print_mg_str(struct mg_str s) {
 }
 
 
-
-
-void basic_to_bearer(struct mg_str basic_auth, char *bearer, size_t bearer_len) {
-    basic_auth.buf += 6;
-    basic_auth.len -= 6;
-
-    char decoded[128] = {0};
-    size_t decoded_len = sizeof(decoded);
-
-    size_t len = mg_base64_decode(basic_auth.buf, basic_auth.len, decoded, decoded_len);
-    if (len > 0 && len < decoded_len) {
-        decoded[len] = '\0';
-        mg_snprintf(bearer, bearer_len, "Bearer %s", decoded);
-    } else {
-        bearer[0] = '\0';
-    }
-}
-
-
 char *mg_str_to_cstr(const struct mg_str *s) {
     char *res = (char *) malloc(s->len + 1);
     if (res == NULL) return NULL;
     memcpy(res, s->buf, s->len);
     res[s->len] = '\0';
     return res;
-}
-
-size_t write_callback(void *contents, size_t size, size_t nmemb, void *userp) {
-    size_t total_size = size * nmemb;
-    strncat((char *)userp, (char *)contents, total_size);
-    return total_size;
 }
 
 
@@ -123,8 +100,8 @@ void redirect(struct mg_http_message *hm, const char *redirect_url, char *respon
 
 }
 
-void print_not_found(struct mg_http_message *hm) {
-    printf("===========[ Not Found ]===========\n");
+void request_info(struct mg_http_message *hm) {
+    printf("===========[ Request ]===========\n");
     print_mg_str(hm->method);
     print_mg_str(hm->uri);
     print_mg_str(hm->query);
@@ -139,17 +116,13 @@ static void event_handler(struct mg_connection *c, int event, void *ev_data) {
         if (mg_strcmp(hm->uri, mg_str("/users/current/heartbeat")) == 0 && mg_strcmp(hm->method, mg_str("POST")) == 0) {
             printf(hm->body.buf);
             mg_http_reply(c, 200, "Content-Type: text/plain\r\n", "OK\n");
-        } else if (mg_strcmp(hm->uri, mg_str("/users/current/statusbar/today")) == 0) {
+        } else {
             printf("REDIRECTING TO HACKTIME API\n");
+            request_info(hm);
             char response[4096] = {0};
             redirect(hm, REDIRECT_URL, response);
             printf("Response from redirect: %s\n", response);
             mg_http_reply(c, 200, "Content-Type: application/json\r\n", "%s", response);
-            //send_request(c->mgr, hm);
-        } else {
-            print_mg_str(hm->method);
-            print_not_found(hm);
-            mg_http_reply(c, 404, "Content-Type: text/plain\r\n", "Not Found\n");
         }
     }
 }

@@ -5,13 +5,15 @@ project(WakatimeSync C)
 set(CMAKE_C_STANDARD 11)
 
 add_executable(${PROJECT_NAME}
-    src/main.c
-    third-party/mongoose/mongoose.c
+        src/main.c
+        src/redirect.h
+        third-party/mongoose/mongoose.c
+        src/redirect.c
 )
 
-if(NOT DEFINED CMAKE_TOOLCHAIN_FILE)
+if (NOT DEFINED CMAKE_TOOLCHAIN_FILE)
     message(FATAL_ERROR "Please run cmake with -DCMAKE_TOOLCHAIN_FILE=...")
-endif()
+endif ()
 
 find_package(CURL REQUIRED)
 
