@@ -9,6 +9,8 @@ add_executable(${PROJECT_NAME}
         src/redirect.h
         third-party/mongoose/mongoose.c
         src/redirect.c
+        src/string_utils.c
+        src/string_utils.h
 )
 
 if (NOT DEFINED CMAKE_TOOLCHAIN_FILE)
